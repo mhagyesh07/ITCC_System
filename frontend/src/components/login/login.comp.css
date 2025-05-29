@@ -1,0 +1,133 @@
+/* Responsive Login Component Styles */
+
+.login-container {
+  max-width: 50%; /* Increase the width of the container */
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #e3f2fd; /* Light blue background for the entire container */
+  border: 1px solid #90caf9; /* Add a border to complement the background */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh; /* Center vertically */
+}
+
+.login-title {
+  text-align: center;
+  color: #03045e; /* Deep navy blue */
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Add spacing between form groups */
+}
+
+.login-form label {
+  font-weight: 500;
+  color: #0077b6; /* Calm ocean blue */
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.login-form .form-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem; /* Space between label and input */
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+  flex: 1; /* Make input take the remaining space */
+  padding: 0.75rem;
+  border: 1px solid #90e0ef; /* Light blue border */
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+  border-color: #00b4d8; /* Bright blue border on focus */
+  outline: none;
+}
+
+.login-form button {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #0077b6, #03045e); /* Blue gradient */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.login-form button:hover {
+  background: linear-gradient(135deg, #03045e, #0077b6); /* Reverse gradient on hover */
+  transform: translateY(-2px);
+}
+
+.login-error {
+  color: #d32f2f; /* Red for error messages */
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+  .login-container {
+    max-width: 98vw;
+    padding: 1rem;
+    margin: 1.5rem auto;
+    border-radius: 8px;
+  }
+
+  .login-title {
+    font-size: 1.3rem;
+  }
+
+  .login-form .form-group {
+    flex-direction: column; /* Stack label and input on smaller screens */
+    align-items: flex-start;
+  }
+
+  .login-form input[type="text"],
+  .login-form input[type="password"] {
+    font-size: 0.95rem;
+    padding: 0.6rem;
+  }
+
+  .login-form button {
+    font-size: 1rem;
+    padding: 0.6rem;
+  }
+}
+.signup-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.signup-link a {
+  color: #0077b6; /* Calm ocean blue */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}
+
+body {
+  background-color: #f0f8ff; /* Set a brighter background color */
+}

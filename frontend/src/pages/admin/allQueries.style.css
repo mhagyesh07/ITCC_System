@@ -1,0 +1,111 @@
+/* General Page Styling */
+.all-queries-page {
+  background-color: #caf0f8;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Header Styling */
+.all-queries-header {
+  font-size: 2.5rem;
+  color: #03045e;
+  text-align: center;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Table Container */
+.all-queries-table-container {
+  width: 100%;
+  max-width: 1200px;
+  overflow-x: auto;
+}
+
+/* Table Styling */
+.all-queries-table {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.all-queries-table thead {
+  background-color: #0077b6;
+  color: #ffffff;
+}
+
+.all-queries-table th {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+.all-queries-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.all-queries-table tbody tr:hover {
+  background-color: #90e0ef;
+}
+
+.all-queries-table td {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1rem;
+  color: #03045e;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .all-queries-table-container {
+    max-width: 100vw;
+    padding: 0;
+  }
+  .all-queries-table {
+    min-width: 500px;
+  }
+}
+
+@media (max-width: 600px) {
+  .all-queries-page {
+    padding: 0.5rem;
+    border-radius: 0;
+    gap: 1rem;
+  }
+
+  .all-queries-header {
+    font-size: 1.2rem;
+  }
+
+  .all-queries-table-container {
+    max-width: 100vw;
+    padding: 0;
+  }
+
+  .all-queries-table {
+    min-width: 350px;
+    font-size: 0.85rem;
+  }
+
+  .all-queries-table th,
+  .all-queries-table td {
+    font-size: 0.8rem;
+    padding: 0.4rem;
+  }
+}
+
+/* Extra: Make table horizontally scrollable on very small screens */
+@media (max-width: 400px) {
+  .all-queries-table {
+    min-width: 300px;
+  }
+}
