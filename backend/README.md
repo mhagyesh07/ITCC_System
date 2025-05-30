@@ -20,8 +20,6 @@ The backend application follows a layered architecture to promote separation of 
 -   **Schema Definition:** Located in `models/`, these define the structure, data types, validation, and relationships for entities like Users and Tickets.
 -   **Data Interaction:** Mongoose models provide a programming interface for CRUD (Create, Read, Update, Delete) operations on the MongoDB database.
 
-### Routes & Controllers
-
 -   **API Endpoints:** Defined in `routes/`. These files use Express Router to define paths (e.g., `/api/users`, `/api/tickets/:id`).
 -   **Controller Logic:** The business logic for handling requests is currently implemented directly within the route handler functions in the `routes/` files. For more complex applications, this logic might be refactored into separate controller files (e.g., in a `controllers/` directory), but for now, it resides alongside the route definitions.
 

@@ -23,7 +23,6 @@ This project is a comprehensive ticketing system designed to streamline customer
 The project is organized into two main directories:
 
 - **`backend/`**: Contains the Node.js/Express.js application, including API routes (in `routes/`), data models (in `models/`), and middleware (in `middleware/`).
-    - **Note on `backend/build/` directory:** There is currently a `build/` directory within the `backend/` folder. This appears to be a frontend production build and might be misplaced. It should be investigated and potentially removed, or if intentionally placed for serving static assets, this needs to be documented. The backend is not currently configured to serve these files.
 - **`frontend/`**: Contains the React application, including components (in `src/components/`), state management logic (primarily in `src/redux/`), and pages/views (in `src/pages/`).
 
 ## Setup and Running the Project
@@ -77,15 +76,7 @@ The project is organized into two main directories:
     ```bash
     pnpm install
     ```
-
-3.  **Create a `.env` file in the `frontend` directory (if needed by your React setup, e.g., for API base URL):**
-    ```env
-    REACT_APP_API_BASE_URL=http://localhost:5000/api
-    ```
-    *This variable is commonly used to point the frontend to the backend API. Adjust if your setup differs.*
-    *Refer to `frontend/README.md` for more details on environment variables if needed.*
-
-4.  **Start the frontend development server:**
+3.  **Start the frontend development server:**
     ```bash
     pnpm start
     ```
