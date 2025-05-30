@@ -73,7 +73,7 @@ The project is organized into two main directories:
 
 3. **Create a `.env` file in the `frontend` directory (if needed by your React setup, e.g., for API base URL):**
    ```env
-   REACT_APP_API_BASE_URL=http://localhost:5000/api
+   REACT_APP_API_BASE_URL=http://localhost:5000
    ```
 
 4. **Start the frontend development server:**
