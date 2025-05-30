@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import Axios
 import { toast } from 'react-hot-toast'; // Import react-hot-toast
+import { useNavigate } from 'react-router-dom';
 import './ticket.style.css';
 
 const Ticket = () => {
@@ -19,6 +20,8 @@ const Ticket = () => {
   const [charCount, setCharCount] = useState(200); // Remaining character count
   const [error, setError] = useState(''); // Error state for API errors
   const [successMessage, setSuccessMessage] = useState(''); // Success message state
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -132,112 +135,127 @@ const Ticket = () => {
 
   return (
     <div className="ticket-page">
-      <h2 className="mb-4 text-center">Create Support Ticket</h2>
-      <form onSubmit={handleSubmit} className="ticket-form">
-        {error && <p className="error-message">{error}</p>} {/* Display error message */}
-        {successMessage && <p className="success-message">{successMessage}</p>} {/* Display success message */}
-        <fieldset disabled>
-          <div className="mb-3">
-            <label className="form-label">Employee Name</label>
-            <input type="text" value={employeeData.name} className="form-control" readOnly />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Department</label>
-            <input type="text" value={employeeData.department} className="form-control" readOnly />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Designation</label>
-            <input type="text" value={employeeData.designation} className="form-control" readOnly />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input type="email" value={employeeData.email} className="form-control" readOnly />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Contact Number</label>
-            <input type="text" value={employeeData.contact} className="form-control" readOnly />
-          </div>
-        </fieldset>
+      <div className="create-ticket-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>   </h1>
+        <button
+          className="btn btn-primary view-tickets-button"
+          onClick={() => navigate('/my-tickets')}
+        >
+          View My Tickets
+        </button>
+      </div>
 
-        <h4>Issue Type:</h4>
-        <div className="mb-2">
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedIssueCategory === 'hardware'}
-              onChange={() => handleMainIssueChange('hardware')}
-            /> Hardware
-          </label>
-        </div>
-        {selectedIssueCategory === 'hardware' && (
-          <div className="ms-3">
-            <label><input type="radio" name="hardware" value="printer" checked={selectedSubIssue === 'printer'} onChange={handleSubIssueChange} /> Printer</label><br />
-            <label><input type="radio" name="hardware" value="computer" checked={selectedSubIssue === 'computer'} onChange={handleSubIssueChange} /> Computer</label><br />
-            <label><input type="radio" name="hardware" value="hardwareOther" checked={selectedSubIssue === 'hardwareOther'} onChange={handleSubIssueChange} /> Other</label>
+      <div className="create-ticket-container">
+        <h2 className="mb-4 text-center" style={{ color: '#03045e' }}>Create Support Ticket</h2>
+        <form onSubmit={handleSubmit} className="ticket-form">
+          {error && <p className="error-message">{error}</p>} {/* Display error message */}
+          {successMessage && <p className="success-message">{successMessage}</p>} {/* Display success message */}
+          <fieldset disabled>
+            <div className="mb-3">
+              <label className="form-label">Employee Name</label>
+              <input type="text" value={employeeData.name} className="form-control" readOnly />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Department</label>
+              <input type="text" value={employeeData.department} className="form-control" readOnly />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Designation</label>
+              <input type="text" value={employeeData.designation} className="form-control" readOnly />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input type="email" value={employeeData.email} className="form-control" readOnly />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Contact Number</label>
+              <input type="text" value={employeeData.contact} className="form-control" readOnly />
+            </div>
+          </fieldset>
+
+          <h4 style={{ color: '#03045e', fontWeight: 'bold' }}>Issue Type:</h4>
+          <div className="mb-2">
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedIssueCategory === 'hardware'}
+                onChange={() => handleMainIssueChange('hardware')}
+              /> Hardware
+            </label>
           </div>
-        )}
+          {selectedIssueCategory === 'hardware' && (
+            <div className="ms-3">
+              <label><input type="radio" name="hardware" value="printer" checked={selectedSubIssue === 'printer'} onChange={handleSubIssueChange} /> Printer</label><br />
+              <label><input type="radio" name="hardware" value="computer" checked={selectedSubIssue === 'computer'} onChange={handleSubIssueChange} /> Computer</label><br />
+              <label><input type="radio" name="hardware" value="hardwareOther" checked={selectedSubIssue === 'hardwareOther'} onChange={handleSubIssueChange} /> Other</label>
+            </div>
+          )}
 
-        <div className="mt-2">
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedIssueCategory === 'software'}
-              onChange={() => handleMainIssueChange('software')}
-            /> Software
-          </label>
-        </div>
-        {selectedIssueCategory === 'software' && (
-          <div className="ms-3">
-            <label><input type="radio" name="software" value="SAP" checked={selectedSubIssue === 'SAP'} onChange={handleSubIssueChange} /> SAP</label><br />
-            <label><input type="radio" name="software" value="legacy" checked={selectedSubIssue === 'legacy'} onChange={handleSubIssueChange} /> Legacy</label><br />
-            <label><input type="radio" name="software" value="softwareOther" checked={selectedSubIssue === 'softwareOther'} onChange={handleSubIssueChange} /> Other</label>
+          <div className="mt-2">
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedIssueCategory === 'software'}
+                onChange={() => handleMainIssueChange('software')}
+              /> Software
+            </label>
           </div>
-        )}
+          {selectedIssueCategory === 'software' && (
+            <div className="ms-3">
+              <label><input type="radio" name="software" value="SAP" checked={selectedSubIssue === 'SAP'} onChange={handleSubIssueChange} /> SAP</label><br />
+              <label><input type="radio" name="software" value="legacy" checked={selectedSubIssue === 'legacy'} onChange={handleSubIssueChange} /> Legacy</label><br />
+              <label><input type="radio" name="software" value="softwareOther" checked={selectedSubIssue === 'softwareOther'} onChange={handleSubIssueChange} /> Other</label>
+            </div>
+          )}
 
-        <div className="mt-2">
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedIssueCategory === 'network'}
-              onChange={() => handleMainIssueChange('network')}
-            /> Network
-          </label>
-        </div>
+          <div className="mt-2">
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedIssueCategory === 'network'}
+                onChange={() => handleMainIssueChange('network')}
+              /> Network
+            </label>
+          </div>
 
-        <div className="mt-2">
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedIssueCategory === 'other'}
-              onChange={() => handleMainIssueChange('other')}
-            /> Other
-          </label>
-        </div>
+          <div className="mt-2">
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedIssueCategory === 'other'}
+                onChange={() => handleMainIssueChange('other')}
+              /> Other
+            </label>
+          </div>
 
-        <h4 className="mt-4" style={{ color: 'black', fontWeight: 'bold' }}>Priority:</h4>
-        <div>
-          <select value={priority} onChange={(e) => setPriority(e.target.value)} className="form-select">
-            <option value="low">Low</option>
-            <option value="med">Medium</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
-          </select>
-        </div>
+          <h4 className="mt-4" style={{ color: '#03045e', fontWeight: 'bold' }}>Priority:</h4>
+          <div>
+            <select value={priority} onChange={(e) => setPriority(e.target.value)} className="form-select">
+              <option value="low">Low</option>
+              <option value="med">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
 
-        <div className="mt-4">
-          <label className="form-label">Description of Issue</label>
-          <textarea
-            value={description}
-            onChange={handleDescriptionChange}
-            maxLength="200"
-            className="form-control"
-            placeholder="Describe the issue (max 200 characters)"
-          ></textarea>
-          <small className="text-muted">{charCount} characters remaining</small>
-        </div>
+          <div className="mt-4">
+            <label className="form-label">Description of Issue</label>
+            <textarea
+              value={description}
+              onChange={handleDescriptionChange}
+              maxLength="200"
+              className="form-control"
+              placeholder="Describe the issue (max 200 characters)"
+            ></textarea>
+            <small className="text-muted">{charCount} characters remaining</small>
+          </div>
 
-        <button type="submit" className="btn btn-primary mt-4">Submit Ticket</button>
-      </form>
+          <p className="disclaimer" style={{ fontWeight: 'bold', textAlign: 'center', marginTop: '1rem' }}>
+            Note: Please do not tap multiple times on the "Submit Ticket" button as it may create multiple copies of the same issue. Have patience. ✌️
+          </p>
+          <button type="submit" className="btn btn-primary mt-4">Submit Ticket</button>
+        </form>
+      </div>
     </div>
   );
 };

@@ -95,4 +95,17 @@ router.get('/admin-only', protect, protectAdmin, async (req, res) => {
   }
 });
 
+// Get tickets for a specific employee
+router.get('/employee/:id', protect, async (req, res) => {
+  try {
+    console.log('Fetching tickets for employee ID:', req.params.id);
+    const tickets = await Ticket.find({ employeeId: req.params.id });
+    console.log('Tickets fetched:', tickets);
+
+    res.json(tickets);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch tickets for the employee.' });
+  }
+});
+
 module.exports = router;
