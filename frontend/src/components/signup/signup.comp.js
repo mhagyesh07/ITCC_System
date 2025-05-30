@@ -1,11 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Form, Button } from 'react-bootstrap';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import './signup.comp.css';
+/**
+ * @file signup.comp.js
+ * @description Signup component for user registration (both employee and admin).
+ * It displays a registration form, manages form state, handles submission,
+ * interacts with the user creation API, and manages navigation upon successful registration.
+ */
 
+import React, { useState, useEffect } from 'react';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap'; // Added Row, Col for layout consistency
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios'; // For making HTTP requests
+import { toast } from 'react-hot-toast'; // For displaying notifications
+import './signup.comp.css'; // Component-specific styles
+
+/**
+ * Signup component.
+ *
+ * @returns {JSX.Element} The rendered Signup form component.
+ */
 const Signup = () => {
+  // State for managing all form input data
   const [formData, setFormData] = useState({
     name: '',
     dept: '',
@@ -13,57 +26,103 @@ const Signup = () => {
     email: '',
     contactNumber: '',
     employeeNumber: '',
-    role: '',
+    role: '', // Role will be set based on URL query parameter
     password: '',
   });
 
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const role = searchParams.get('role');
+  const navigate = useNavigate(); // Hook for programmatic navigation
+  const [searchParams] = useSearchParams(); // Hook to access URL query parameters
+  // Get 'role' from URL (e.g., 'admin' or 'employee') to customize behavior
+  const initialRole = searchParams.get('role') || 'employee'; // Default to 'employee'
 
-  // Set default role based on query parameter
+  // Effect hook to set the initial role in formData when the component mounts or 'role' from URL changes.
+  // Also sets the document title dynamically.
   useEffect(() => {
-    setFormData(prev => ({ ...prev, role: role || 'employee' }));
-  }, [role]);
+    setFormData(prev => ({ ...prev, role: initialRole }));
+    document.title = initialRole === 'admin' ? 'Admin Signup - Ticketing System' : 'Employee Signup - Ticketing System';
+  }, [initialRole]);
 
+  /**
+   * Handles changes in form input fields.
+   * Updates the `formData` state with the new value.
+   * Trims leading/trailing whitespace from most fields, and only leading for email.
+   * @param {React.ChangeEvent<HTMLInputElement|HTMLSelectElement>} e - The input change event.
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    let processedValue = value;
+    if (name === "email") {
+      processedValue = value.trimStart(); // Trim only leading spaces for email
+    } else if (typeof value === 'string') {
+      processedValue = value.trim(); // Trim leading/trailing for other string inputs
+    }
+    setFormData(prev => ({ ...prev, [name]: processedValue }));
   };
 
+  /**
+   * Handles the signup form submission.
+   * Performs basic validation, sends registration data to the backend API,
+   * stores the received token and role in localStorage upon success,
+   * and navigates the user to the appropriate dashboard.
+   * Displays toast notifications for success or error messages.
+   * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+   */
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
 
-    if (!formData.name || !formData.email || !formData.password || !formData.role) {
-      toast.error('Please fill in all required fields.', { duration: 5000 });
+    // Basic validation: ensure all required fields are filled
+    // Note: 'dept', 'designation', 'contactNumber', 'employeeNumber' might be optional depending on backend logic
+    if (!formData.name || !formData.email || !formData.password || !formData.role ||
+        !formData.dept || !formData.designation || !formData.contactNumber || !formData.employeeNumber) {
+      toast.error('Please fill in all fields.', { duration: 5000 });
       return;
     }
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/users`,
-        formData,
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+      // API endpoint URL, using environment variable or defaulting to localhost
+      const API_URL = `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/users`;
 
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('role', formData.role);
-      if (formData.role === 'admin') {
-        navigate('/admin');
+      // Make a POST request to the user creation API
+      const response = await axios.post(API_URL, formData, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      // If signup is successful and a token is received
+      if (response.data && response.data.token) {
+        localStorage.clear(); // Clear previous localStorage data
+        localStorage.setItem('token', response.data.token);
+        // Use role from response if available, otherwise from formData (which was set from URL)
+        const userRole = response.data.user?.role || formData.role;
+        localStorage.setItem('role', userRole);
+
+        toast.success('Signup successful! Redirecting...');
+
+        // Navigate based on user role
+        if (userRole === 'admin') {
+          navigate('/admin'); // Redirect admins to the admin dashboard
+        } else {
+          navigate('/ticket'); // Redirect employees to the ticket dashboard
+        }
       } else {
-        navigate('/ticket');
+         // Handle cases where signup might be successful but token is missing
+        toast.error('Signup successful, but no token received. Please try logging in or contact support.', { duration: 5000 });
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Signup failed. Please try again.', { duration: 5000 });
+      // Handle API errors (e.g., email already exists, server issues)
+      const errorMessage = error.response?.data?.error || 'Signup failed. Please check your details and try again.';
+      toast.error(errorMessage, { duration: 5000 });
     }
   };
 
   return (
     <Container className="signup-container">
-      <h1 className="signup-title">{role === 'admin' ? 'Admin Signup' : 'Employee Signup'}</h1>
-      <Form className="signup-form" onSubmit={handleSubmit}>
-        <Form.Group controlId="formName" className="mb-3">
-          <Form.Label>Name</Form.Label>
+      <Row className="justify-content-md-center"> {/* Center the content */}
+        <Col md={8} lg={6}> {/* Adjust column width for responsiveness */}
+          <h1 className="signup-title text-center">{initialRole === 'admin' ? 'Admin Signup' : 'Employee Signup'}</h1>
+          <Form className="signup-form" onSubmit={handleSubmit}>
+            {/* Name Field */}
+            <Form.Group controlId="formName" className="mb-3">
+              <Form.Label>Full Name</Form.Label>
           <Form.Control
             type="text"
             name="name"
