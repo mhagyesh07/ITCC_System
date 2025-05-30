@@ -7,6 +7,8 @@ import './admin.style.css';
 const Admin = () => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
+  const [sortColumn, setSortColumn] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -27,6 +29,55 @@ const Admin = () => {
     navigate(`/admin/query/${id}`);
   };
 
+  const handleSort = (column) => {
+    let sortedTickets;
+    if (sortColumn === column) {
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+        sortedTickets = [...tickets].sort((a, b) => {
+          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
+          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return valueB.localeCompare(valueA);
+          }
+
+          return valueB - valueA;
+        });
+      } else if (sortOrder === 'desc') {
+        setSortOrder('default');
+        sortedTickets = [...tickets].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else {
+        setSortOrder('asc');
+        sortedTickets = [...tickets].sort((a, b) => {
+          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
+          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return valueA.localeCompare(valueB);
+          }
+
+          return valueA - valueB;
+        });
+      }
+    } else {
+      setSortColumn(column);
+      setSortOrder('asc');
+      sortedTickets = [...tickets].sort((a, b) => {
+        const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
+        const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          return valueA.localeCompare(valueB);
+        }
+
+        return valueA - valueB;
+      });
+    }
+
+    setTickets(sortedTickets);
+  };
+
   return (
     <Container className="admin-page">
       <h1 className="admin-header">Admin Dashboard</h1>
@@ -35,6 +86,19 @@ const Admin = () => {
           Show All Queries
         </Button>
       </div>
+      <div className="sorting-controls">
+        <label htmlFor="sort-column">Sort by:</label>
+        <select id="sort-column" onChange={(e) => setSortColumn(e.target.value)}>
+          <option value="createdAt">Date</option>
+          <option value="employeeId.name">Name</option>
+          <option value="priority">Priority</option>
+          <option value="issueType">Issue Type</option>
+          <option value="status">Status</option>
+        </select>
+        <button className="toggle-button" onClick={() => handleSort(sortColumn)}>
+          Toggle Order ({sortOrder === 'asc' ? 'Ascending' : sortOrder === 'desc' ? 'Descending' : 'Default'})
+        </button>
+      </div>
       <div className="admin-table-container">
         <table className="admin-table">
           <thead>
@@ -42,13 +106,9 @@ const Admin = () => {
               <th>Date</th>
               <th>Time</th>
               <th>Name</th>
-              <th>
-                Criticality
-              </th>
-              <th>Type</th>
-              <th>
-                Status
-              </th>
+              <th>Priority</th>
+              <th>Issue Type</th>
+              <th>Status</th>
               <th>Details</th>
             </tr>
           </thead>
@@ -56,11 +116,11 @@ const Admin = () => {
             {tickets.map((ticket) => (
               <tr key={ticket._id}>
                 <td>{ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
-                <td>{ticket.createdAt ? new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A'}</td>
+                <td>{ticket.createdAt ? new Date(ticket.createdAt).toLocaleTimeString('en-GB') : 'N/A'}</td>
                 <td>{ticket.employeeId?.name || 'N/A'}</td>
                 <td>{ticket.priority || 'N/A'}</td>
                 <td>{ticket.issueType || 'N/A'}</td>
-                <td>{ticket.status}</td>
+                <td>{ticket.status === 'open' ? 'Open' : ticket.status}</td>
                 <td>
                   <Button
                     className="details-button"

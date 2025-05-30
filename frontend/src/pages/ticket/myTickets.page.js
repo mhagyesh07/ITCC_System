@@ -5,6 +5,8 @@ import './myTickets.style.css';
 
 const MyTickets = () => {
   const [tickets, setTickets] = useState([]);
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     const fetchEmployeeId = async () => {
@@ -57,12 +59,73 @@ const MyTickets = () => {
     return date.toLocaleTimeString();
   };
 
+  const handleSort = (column) => {
+    let sortedTickets;
+    if (sortColumn === column) {
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+        sortedTickets = [...tickets].sort((a, b) => {
+          const valueA = a[column] || '';
+          const valueB = b[column] || '';
+
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return valueB.localeCompare(valueA);
+          }
+
+          return valueB - valueA;
+        });
+      } else if (sortOrder === 'desc') {
+        setSortOrder('default');
+        sortedTickets = [...tickets].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else {
+        setSortOrder('asc');
+        sortedTickets = [...tickets].sort((a, b) => {
+          const valueA = a[column] || '';
+          const valueB = b[column] || '';
+
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return valueA.localeCompare(valueB);
+          }
+
+          return valueA - valueB;
+        });
+      }
+    } else {
+      setSortColumn(column);
+      setSortOrder('asc');
+      sortedTickets = [...tickets].sort((a, b) => {
+        const valueA = a[column] || '';
+        const valueB = b[column] || '';
+
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          return valueA.localeCompare(valueB);
+        }
+
+        return valueA - valueB;
+      });
+    }
+    setTickets(sortedTickets);
+  };
+
   return (
     <div className="my-tickets-container">
       <h1 style={{ color: '#03045e' }}>My Tickets</h1>
       <p className="disclaimer" style={{ fontWeight: 'bold' }}>
         Note: "Closed" status indicates the work is completed, while "Open" status means the work is still in progress.
       </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <div>
+          <label htmlFor="sort-column">Sort by:</label>
+          <select id="sort-column" onChange={(e) => setSortColumn(e.target.value)}>
+            <option value="none">None</option>
+            <option value="priority">Priority</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+        <button className="sort-button" onClick={() => handleSort(sortColumn)}>
+          Toggle Order ({sortOrder === 'asc' ? 'Ascending' : sortOrder === 'desc' ? 'Descending' : 'Default'})
+        </button>
+      </div>
       <table className="my-tickets-table">
         <thead>
           <tr>
@@ -80,7 +143,7 @@ const MyTickets = () => {
               <td>{formatTime(ticket.createdAt)}</td>
               <td>{ticket.issueType}</td>
               <td>{ticket.priority}</td>
-              <td>{ticket.status}</td>
+              <td>{ticket.status === 'open' ? 'Open' : ticket.status}</td>
             </tr>
           ))}
         </tbody>

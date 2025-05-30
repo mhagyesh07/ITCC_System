@@ -7,6 +7,8 @@ import './allQueries.style.css';
 const AllQueries = () => {
   const navigate = useNavigate();
   const [queries, setQueries] = useState([]);
+  const [sortColumn, setSortColumn] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -27,11 +29,70 @@ const AllQueries = () => {
     navigate(`/admin/query/${id}`);
   };
 
+  const handleSort = (column) => {
+    let sortedQueries;
+    if (sortColumn === column) {
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+        sortedQueries = [...queries].sort((a, b) => {
+          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
+          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return valueB.localeCompare(valueA);
+          }
+
+          return valueB - valueA;
+        });
+      } else if (sortOrder === 'desc') {
+        setSortOrder('default');
+        sortedQueries = [...queries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else {
+        setSortOrder('asc');
+        sortedQueries = [...queries].sort((a, b) => {
+          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
+          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return valueA.localeCompare(valueB);
+          }
+
+          return valueA - valueB;
+        });
+      }
+    } else {
+      setSortColumn(column);
+      setSortOrder('asc');
+      sortedQueries = [...queries].sort((a, b) => {
+        const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
+        const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          return valueA.localeCompare(valueB);
+        }
+
+        return valueA - valueB;
+      });
+    }
+
+    setQueries(sortedQueries);
+  };
+
   return (
     <Container className="all-queries-page">
       <h1 className="all-queries-header">All Queries</h1>
-      <div className="sorting-buttons">
-        {/* Removed extra buttons for sorting */}
+      <div className="sorting-controls">
+        <label htmlFor="sort-column">Sort by:</label>
+        <select id="sort-column" onChange={(e) => setSortColumn(e.target.value)}>
+          <option value="createdAt">Date</option>
+          <option value="employeeId.name">Name</option>
+          <option value="priority">Priority</option>
+          <option value="issueType">Issue Type</option>
+          <option value="status">Status</option>
+        </select>
+        <button className="toggle-button" onClick={() => handleSort(sortColumn)}>
+          Toggle Order ({sortOrder === 'asc' ? 'Ascending' : sortOrder === 'desc' ? 'Descending' : 'Default'})
+        </button>
       </div>
       <div className="all-queries-table-container">
         <Table className="all-queries-table" bordered hover>
@@ -40,13 +101,9 @@ const AllQueries = () => {
               <th>Date</th>
               <th>Time</th>
               <th>Name</th>
-              <th>
-                Criticality
-              </th>
-              <th>Type</th>
-              <th>
-                Status
-              </th>
+              <th>Priority</th>
+              <th>Issue Type</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -54,11 +111,11 @@ const AllQueries = () => {
             {queries.map((query) => (
               <tr key={query._id}>
                 <td>{query.createdAt ? new Date(query.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
-                <td>{query.createdAt ? new Date(query.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A'}</td>
+                <td>{query.createdAt ? new Date(query.createdAt).toLocaleTimeString('en-GB') : 'N/A'}</td>
                 <td>{query.employeeId?.name || 'N/A'}</td>
                 <td>{query.priority || 'N/A'}</td>
                 <td>{query.issueType || 'N/A'}</td>
-                <td>{query.status}</td>
+                <td>{query.status === 'open' ? 'Open' : query.status}</td>
                 <td>
                   <Button
                     className="details-button"

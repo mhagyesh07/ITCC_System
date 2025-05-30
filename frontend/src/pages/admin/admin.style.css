@@ -86,6 +86,36 @@
   box-shadow: 0 0 5px rgba(0, 116, 217, 0.5); /* Blue glow */
 }
 
+/* Update styles for sort and toggle buttons to match myTickets */
+.sort-button, .toggle-button {
+  padding: 0.4rem 0.8rem; /* Smaller size */
+  font-size: 0.9rem; /* Smaller font size */
+  font-weight: bold;
+  color: #03045e; /* Darker text */
+  background-color: #90e0ef; /* Light blue background */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.sort-button:hover, .toggle-button:hover {
+  background-color: #0077b6; /* Slightly darker blue on hover */
+  transform: translateY(-2px); /* Lift effect */
+}
+
+.sort-button:focus, .toggle-button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 119, 182, 0.5); /* Blue glow */
+}
+
+/* Add spacing between Sort By and Toggle Order buttons */
+.sorting-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Add spacing between elements */
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
   .admin-table-container {

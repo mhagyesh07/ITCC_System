@@ -1,4 +1,3 @@
-/* Apply admin page styling to My Tickets page */
 .my-tickets-container {
   background-color: #caf0f8; /* Light blue background */
   padding: 2rem;
@@ -88,4 +87,36 @@
 
 .table tr:hover {
   background-color: #ddd;
+}
+
+/* Revert the size of the sort button */
+.sort-button {
+  padding: 0.3rem 0.6rem; /* Original smaller size */
+  font-size: 0.8rem; /* Original smaller font size */
+  font-weight: bold;
+  color: #03045e; /* Darker text */
+  background-color: #90e0ef; /* Light blue background */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  letter-spacing: 0.05rem; /* Add spacing between text */
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.sort-button:hover {
+  background-color: #0077b6; /* Slightly darker blue on hover */
+  transform: translateY(-2px); /* Lift effect */
+}
+
+.sort-button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 119, 182, 0.5); /* Blue glow */
+}
+
+/* Ensure spacing between Sort By dropdown and button */
+.sorting-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Add spacing between elements */
+  margin-bottom: 1rem; /* Add margin below the controls */
 }
