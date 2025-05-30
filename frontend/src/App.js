@@ -20,9 +20,9 @@ const ProtectedRoute = ({ children, role }) => {
     return <Navigate to="/login" />;
   }
 
-  if (userRole !== role) {
-    console.log(`Role mismatch: expected ${role}, got ${userRole}. Redirecting to login.`);
-    return <Navigate to="/login" />;
+  if (role && userRole !== role) {
+    console.log(`Role mismatch: expected ${role}, got ${userRole}. Redirecting to ${userRole === 'admin' ? '/admin' : '/ticket'}.`);
+    return <Navigate to={userRole === 'admin' ? '/admin' : '/ticket'} />;
   }
 
   return children;
