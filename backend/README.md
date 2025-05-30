@@ -19,7 +19,7 @@ The backend application follows a layered architecture, promoting separation of 
 -   **Response Generation:** Send back HTTP responses to the client, including status codes, data (often in JSON format), or error messages.
 -   **Location:** Typically found in a `routes/` or `routes/api/` directory (e.g., `routes/auth.js`, `routes/tickets.js`).
 
-### Controllers (Often part of Routes or in a separate `controllers/` directory)
+### Controllers 
 
 -   **Business Logic:** Contain the core application logic for handling requests. Controllers interact with models to fetch or store data and perform any necessary data transformations or business rule enforcement.
 -   **Separation from Routing:** By placing business logic in controllers, route files remain lean and focused on request handling.
