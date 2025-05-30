@@ -40,8 +40,10 @@ const Login = () => {
       );
 
       if (response.data && response.data.token) {
+        localStorage.clear();
         localStorage.setItem('token', response.data.token);
         const userRole = response.data.role;
+        localStorage.setItem('role', userRole);
         if (userRole === 'admin') {
           navigate('/admin');
         } else {
