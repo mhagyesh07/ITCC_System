@@ -1,40 +1,49 @@
 # Frontend Application
 
-This directory contains the React.js frontend for the Ticketing System.
+This directory contains the React.js frontend for the Ticketing System. It is designed to interact with the backend API to provide a user interface for creating, managing, and viewing tickets.
 
 ## Frontend Architecture
 
 The frontend application follows a component-based architecture, leveraging modern React features and best practices.
 
+### Core Structure:
+- **`public/`**: Contains static assets like `index.html`, `favicon.ico`, and `manifest.json`.
+- **`src/`**: Contains the vast majority of the React application code.
+    - **`src/components/`**: Reusable UI components (e.g., buttons, forms, layout elements).
+    - **`src/pages/`**: Top-level components that represent different pages or views of the application (e.g., LoginPage, DashboardPage, TicketDetailPage).
+    - **`src/redux/`**: Contains all Redux-related code for state management.
+        - **`store.js`**: The main Redux store configuration (`frontend/src/redux/store.js`).
+        - **Sub-directories (e.g., `tickets/`)**: Typically for actions, reducers, and selectors related to specific state slices.
+    - **`src/App.js`**: The main application component, often responsible for routing.
+    - **`src/index.js`**: The entry point of the React application, rendering the `App` component into the DOM.
+- **`vercel.json`**: Configuration file for deploying this frontend to Vercel.
+
+*(Note: There also appears to be a `frontend/redux/` directory. This might be redundant or legacy. It's recommended to consolidate all Redux logic under `frontend/src/redux/` for clarity and consistency.)*
+
 ### Components
 
-- **Reusable UI Elements:** The application is built using a collection of reusable React components, located in the `src/components` directory. These components range from simple UI elements (buttons, inputs) to more complex views (ticket lists, forms).
-- **Container Components:** Higher-order components or components that manage application state and logic, often connecting to the Redux store.
-- **Presentational Components:** Components focused solely on rendering UI based on props received, promoting reusability and separation of concerns.
+- **Reusable UI Elements:** Located in `src/components/`, these are general-purpose components used throughout the application.
+- **Page Components:** Located in `src/pages/`, these components orchestrate various UI elements and application logic for specific views.
+- **Container vs. Presentational Components:** While not strictly enforced by directory structure, the application aims to separate components that manage logic and state (containers) from those that primarily render UI (presentational).
 
 ### State Management (Redux)
 
-- **Centralized Store:** We use Redux for managing global application state. The Redux store is the single source of truth for data that needs to be accessed by multiple components.
-- **Actions & Reducers:**
-    - **Actions:** Plain JavaScript objects that represent an intention to change the state. They are dispatched from components (e.g., when a user clicks a button).
-    - **Reducers:** Pure functions that specify how the application's state changes in response to actions. Each reducer manages a slice of the application state.
-- **Selectors:** Functions used to efficiently retrieve derived data from the Redux store.
-- **Middleware (e.g., Redux Thunk):** Used for handling asynchronous operations, such as API calls, before an action reaches the reducers.
-
-The Redux setup (store, reducers, actions) can typically be found in the `src/store` or `src/redux` directory.
+- **Centralized Store:** Redux (`frontend/src/redux/store.js`) is used for global application state that needs to be shared across multiple components (e.g., user authentication status, ticket lists).
+- **Actions & Reducers:** Standard Redux pattern for updating state in response to application events or API calls.
+- **Middleware (e.g., Redux Thunk):** Used for handling asynchronous operations like fetching data from the backend API.
 
 ### Routing
 
-- **React Router:** Client-side routing is handled by `react-router-dom`. This allows for navigation between different views/pages of the application without requiring a full page reload.
-- **Route Definitions:** Routes are typically defined in a central location (e.g., `src/App.js` or a dedicated `src/routes.js` file), mapping URL paths to specific React components.
-- **Protected Routes:** Routes that require user authentication are protected, redirecting unauthenticated users to a login page.
+- **React Router:** `react-router-dom` is used for client-side navigation, allowing users to move between different pages without full page reloads.
+- **Route Definitions:** Typically configured within `src/App.js` or a dedicated routing module.
+- **Protected Routes:** Implemented to restrict access to certain pages based on user authentication status.
 
 ## Building and Running the Frontend Separately
 
 ### Prerequisites
 
 - Node.js (v14 or higher)
-- npm (Node Package Manager)
+- pnpm (Node Package Manager) - *This project uses pnpm.*
 
 ### Setup and Running
 
@@ -43,51 +52,50 @@ The Redux setup (store, reducers, actions) can typically be found in the `src/st
     cd frontend
     ```
 
-2.  **Install dependencies:**
+2.  **Install dependencies using pnpm:**
     ```bash
-    npm install
+    pnpm install
     ```
 
-3.  **Environment Variables (Optional but Recommended):**
-    Create a `.env` file in the `frontend` directory to configure environment-specific settings. For example:
+3.  **Environment Variables:**
+    Create a `.env` file in the `frontend` directory. This is especially important for specifying the backend API URL:
     ```env
     REACT_APP_API_BASE_URL=http://localhost:5000/api
     ```
-    The frontend will use this base URL to make API requests to the backend.
+    -   `REACT_APP_API_BASE_URL`: This variable tells the frontend where to send API requests. During local development, it usually points to your local backend server. For production deployments, this would be the URL of your deployed backend.
+    *(Your application might require other environment variables; document them here as they are added.)*
 
 4.  **Start the development server:**
     ```bash
-    npm start
+    pnpm start
     ```
-    This will start the React development server (usually on `http://localhost:3000`) with hot reloading enabled.
+    This will start the React development server (usually on `http://localhost:3000`) with hot reloading.
 
 ## Available Scripts
 
-In the `frontend` directory, you can run the following scripts:
+In the `frontend` directory, you can run the following scripts using `pnpm`:
 
--   ### `npm start`
+-   ### `pnpm start`
 
-    Runs the app in development mode.
-    Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-    The page will reload if you make edits. You will also see any lint errors in the console.
+    Runs the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser. The page will reload if you make edits, and you'll see lint errors in the console.
 
--   ### `npm test`
+-   ### `pnpm test`
 
-    Launches the test runner in interactive watch mode.
-    See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information. (Note: This assumes Create React App or a similar setup).
+    Launches the test runner in interactive watch mode (if testing frameworks like Jest are configured). See project-specific testing documentation for more details.
 
--   ### `npm run build`
+-   ### `pnpm run build`
 
-    Builds the app for production to the `build` folder.
-    It correctly bundles React in production mode and optimizes the build for the best performance.
-    The build is minified and the filenames include the hashes. Your app is ready to be deployed!
-    See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    Builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance. The build is minified, and filenames include hashes.
 
--   ### `npm run eject`
+-   ### `pnpm run eject` (If applicable)
 
     **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-    If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-    Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc.) right into your project so you have full control over them. All of पायthe commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point, you’re on your own.
-    You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However, we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+    If your project was bootstrapped with a tool like Create React App and you need to customize the underlying build configurations (webpack, Babel, ESLint, etc.), `eject` will remove the single build dependency and copy the configuration files into your project. Use with caution. If this project does not use Create React App, this script might not be relevant.
 
-(Modify the test and deployment links if not using Create React App as the base).
+## Deployment
+
+This frontend application is configured for deployment via Vercel, as indicated by the `vercel.json` file. For detailed deployment steps and backend deployment, refer to the "Deployment" section in the main project `README.md` at the root of this repository.
+
+---
+
+*This README provides an overview of the frontend application. For more specific details, refer to the source code and comments within the respective files.*
