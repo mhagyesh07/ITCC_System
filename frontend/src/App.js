@@ -35,7 +35,7 @@ function App() {
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('role');
 
-    if (!token) {
+    if (!token && window.location.pathname !== '/') {
       navigate('/login');
     } else if (userRole === 'employee' && window.location.pathname.startsWith('/admin')) {
       navigate('/ticket');

@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
     if (!isPasswordValid) return res.status(400).json({ error: 'Invalid email or password.' });
 
     const token = generateToken(user._id);
-    res.status(200).json({ message: 'Login successful', token });
+    res.status(200).json({ message: 'Login successful', token, role: user.role });
   } catch (error) {
     res.status(500).json({ error: 'An error occurred during login.' });
   }
