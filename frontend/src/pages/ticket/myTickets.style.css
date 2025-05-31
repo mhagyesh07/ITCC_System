@@ -19,19 +19,24 @@
 }
 
 .my-tickets-table-container {
-  width: 100%;
-  max-width: 1200px; /* Limit table width */
-  overflow-x: auto; /* Add horizontal scroll for smaller screens */
+  display: flex;
+  justify-content: center; /* Center align table */
+  align-items: center;
+  margin: 0 auto; /* Center the div horizontally */
+  max-width: 100%; /* Ensure container does not exceed screen width */
+  overflow-x: auto; /* Enable horizontal scrolling if content overflows */
+  box-sizing: border-box; /* Include padding and border in width calculations */
 }
 
 .my-tickets-table {
-  width: 100%; /* Full width table */
+  width: 100%; /* Ensure table fits within container */
+  max-width: 100%; /* Prevent table from exceeding container width */
   background-color: #ffffff; /* White table background */
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   border-collapse: collapse; /* Remove gaps between table cells */
-  min-width: 600px;
+  min-width: 300px; /* Minimum width for table */
 }
 
 .my-tickets-table thead {
@@ -119,4 +124,26 @@
   align-items: center;
   gap: 1rem; /* Add spacing between elements */
   margin-bottom: 1rem; /* Add margin below the controls */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .my-tickets-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .my-tickets-header {
+    font-size: 2rem;
+  }
+
+  .my-tickets-table-container {
+    max-width: 100%;
+    overflow-x: auto; /* Ensure horizontal scrolling */
+  }
+
+  .my-tickets-table th, .my-tickets-table td {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
 }
