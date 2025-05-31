@@ -1,30 +1,34 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchTickets, createTicket } from './ticketsActions'; // Import async thunks
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
-const initialState = {
-  tickets: [], // Initialize with an empty array, data will come from API
-  loading: false,
-  error: null,
-  isCreating: false,
-  createError: null,
-};
+export const fetchTickets = createAsyncThunk('tickets/fetchTickets', async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/tickets`);
+    return data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || error.message);
+  }
+});
+
+export const createTicket = createAsyncThunk('tickets/createTicket', async (ticketData, { rejectWithValue }) => {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/tickets`, ticketData);
+    return data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || error.message);
+  }
+});
 
 const ticketsSlice = createSlice({
   name: 'tickets',
-  initialState,
-  reducers: {
-    // This reducer updates status locally. For API integration, a new thunk would be needed.
-    closeTicketLocally: (state, action) => {
-      const ticketId = action.payload;
-      const ticket = state.tickets.find((t) => t._id === ticketId || t.id === ticketId); // Handle both _id from mongo and potential local id
-      if (ticket) {
-        ticket.status = 'Closed';
-      }
-    },
+  initialState: {
+    tickets: [],
+    loading: false,
+    error: null,
   },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      // Handle fetchTickets
       .addCase(fetchTickets.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -37,26 +41,19 @@ const ticketsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Handle createTicket
       .addCase(createTicket.pending, (state) => {
-        state.isCreating = true;
-        state.createError = null;
+        state.loading = true;
+        state.error = null;
       })
       .addCase(createTicket.fulfilled, (state, action) => {
-        state.isCreating = false;
-        // Add the new ticket to the existing list
-        // Ensure tickets is always an array
-        if (!Array.isArray(state.tickets)) {
-            state.tickets = [];
-        }
+        state.loading = false;
         state.tickets.push(action.payload);
       })
       .addCase(createTicket.rejected, (state, action) => {
-        state.isCreating = false;
-        state.createError = action.payload;
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { closeTicketLocally } = ticketsSlice.actions; // Renamed to clarify it's a local update
 export default ticketsSlice.reducer;
