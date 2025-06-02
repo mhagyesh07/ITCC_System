@@ -44,6 +44,12 @@ const Login = () => {
         localStorage.setItem('token', response.data.token);
         const userRole = response.data.role;
         localStorage.setItem('role', userRole);
+        
+        if (role !== userRole) {
+          toast.error('Role mismatch. Please log in with the correct role.', { duration: 5000 });
+          return;
+        }
+        
         if (userRole === 'admin') {
           navigate('/admin');
         } else {
