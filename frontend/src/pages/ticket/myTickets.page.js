@@ -142,7 +142,7 @@ const MyTickets = () => {
               <td>{formatDate(ticket.createdAt)}</td>
               <td>{formatTime(ticket.createdAt)}</td>
               <td>{ticket.issueType}</td>
-              <td>{ticket.priority}</td>
+              <td>{ticket.priority === 'med' ? 'medium' : ticket.priority}</td>
               <td>{ticket.status === 'open' ? 'Open' : ticket.status}</td>
             </tr>
           ))}
