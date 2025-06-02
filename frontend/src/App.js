@@ -36,9 +36,23 @@ function App() {
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('role');
 
-    if (!token && window.location.pathname !== '/') {
-      navigate('/login');
-    } else if (userRole === 'employee' && window.location.pathname.startsWith('/admin')) {
+    const currentPath = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+    const role = searchParams.get('role');
+
+    // if (!token && currentPath === '/forgot-password') {
+    //   // Allow navigation to /forgot-password without redirecting to /login
+    //   return;
+    // }
+
+    if (!token && (currentPath === '/login' || currentPath === '/signup') && role) {
+      // Avoid redirect loop if already on the correct route
+      return;
+    }
+
+    if (!token && currentPath !== '/') {
+      navigate(`/login${role ? `?role=${role}` : ''}`);
+    } else if (userRole === 'employee' && currentPath.startsWith('/admin')) {
       navigate('/ticket');
     }
   }, [navigate]);
