@@ -122,7 +122,7 @@
 .sorting-controls {
   display: flex;
   align-items: center;
-  gap: 1rem; /* Add spacing between elements */
+  gap: 1rem; /* Further increase spacing between elements */
   margin-bottom: 1rem; /* Add margin below the controls */
 }
 
@@ -146,8 +146,4 @@
     font-size: 0.9rem;
     padding: 0.5rem;
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 09bdf90259de27fe2cad85c69c81cec99a17abc5

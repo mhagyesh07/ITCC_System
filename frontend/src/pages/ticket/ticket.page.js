@@ -228,6 +228,7 @@ const Ticket = () => {
             </label>
           </div>
 
+    
           <h4 className="mt-4" style={{ color: '#03045e', fontWeight: 'bold' }}>Priority:</h4>
           <div>
             <select value={priority} onChange={(e) => setPriority(e.target.value)} className="form-select">
@@ -237,6 +238,9 @@ const Ticket = () => {
               <option value="critical">Critical</option>
             </select>
           </div>
+          <p className="priority-note" style={{ fontWeight: 'bold', color: '#000' }}>
+            Note: Priority levels are ordered as follows: Critical (highest priority), High, Medium, and Low (lowest priority).
+          </p>
 
           <div className="mt-4">
             <label className="form-label">Description of Issue</label>

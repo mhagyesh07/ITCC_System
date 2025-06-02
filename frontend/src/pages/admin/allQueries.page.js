@@ -7,8 +7,9 @@ import './allQueries.style.css';
 const AllQueries = () => {
   const navigate = useNavigate();
   const [queries, setQueries] = useState([]);
-  const [sortColumn, setSortColumn] = useState('createdAt');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [originalQueries, setOriginalQueries] = useState([]); // Store original order
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortOrder, setSortOrder] = useState('default');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -18,10 +19,10 @@ const AllQueries = () => {
     axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/tickets?sort=-createdAt`, config)
       .then(response => {
         setQueries(response.data);
+        setOriginalQueries(response.data); // Store the original order
       })
       .catch(error => {
         console.error('Error fetching all queries:', error);
-
       });
   }, []);
 
@@ -30,47 +31,72 @@ const AllQueries = () => {
   };
 
   const handleSort = (column) => {
+    if (!column || column === 'none') {
+      setQueries([...originalQueries]);
+      setSortColumn(null);
+      setSortOrder('default');
+      return;
+    }
+
     let sortedQueries;
+    const priorityMap = { low: 1, medium: 2, med: 2, high: 3, critical: 4 };
+
     if (sortColumn === column) {
-      if (sortOrder === 'asc') {
-        setSortOrder('desc');
-        sortedQueries = [...queries].sort((a, b) => {
-          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
-          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
-
-          if (typeof valueA === 'string' && typeof valueB === 'string') {
-            return valueB.localeCompare(valueA);
-          }
-
-          return valueB - valueA;
-        });
-      } else if (sortOrder === 'desc') {
-        setSortOrder('default');
-        sortedQueries = [...queries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      } else {
+      // Cycle through: default -> asc -> desc -> default
+      if (sortOrder === 'default') {
         setSortOrder('asc');
         sortedQueries = [...queries].sort((a, b) => {
-          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
-          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
+                         column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
+          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
+                         column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
 
-          if (typeof valueA === 'string' && typeof valueB === 'string') {
+          if (column === 'priority') {
+            return valueA - valueB; // Ascending: low -> medium -> high -> critical
+          } else if (column === 'createdAt') {
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          } else if (typeof valueA === 'string' && typeof valueB === 'string') {
             return valueA.localeCompare(valueB);
           }
-
           return valueA - valueB;
         });
+      } else if (sortOrder === 'asc') {
+        setSortOrder('desc');
+        sortedQueries = [...queries].sort((a, b) => {
+          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
+                         column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
+          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
+                         column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
+
+          if (column === 'priority') {
+            return valueB - valueA; // Descending: critical -> high -> medium -> low
+          } else if (column === 'createdAt') {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return valueB.localeCompare(valueA);
+          }
+          return valueB - valueA;
+        });
+      } else {
+        setSortOrder('default');
+        sortedQueries = [...originalQueries]; // Return to original order
       }
     } else {
       setSortColumn(column);
       setSortOrder('asc');
       sortedQueries = [...queries].sort((a, b) => {
-        const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
-        const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+        const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
+                       column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
+        const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
+                       column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
 
-        if (typeof valueA === 'string' && typeof valueB === 'string') {
+        if (column === 'priority') {
+          return valueA - valueB; // Ascending: low -> medium -> high -> critical
+        } else if (column === 'createdAt') {
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        } else if (typeof valueA === 'string' && typeof valueB === 'string') {
           return valueA.localeCompare(valueB);
         }
-
         return valueA - valueB;
       });
     }
@@ -83,7 +109,8 @@ const AllQueries = () => {
       <h1 className="all-queries-header">All Queries</h1>
       <div className="sorting-controls">
         <label htmlFor="sort-column">Sort by:</label>
-        <select id="sort-column" onChange={(e) => setSortColumn(e.target.value)}>
+        <select id="sort-column" value={sortColumn || 'none'} onChange={(e) => handleSort(e.target.value)}>
+          <option value="none">None</option>
           <option value="createdAt">Date</option>
           <option value="employeeId.name">Name</option>
           <option value="priority">Priority</option>
@@ -113,7 +140,7 @@ const AllQueries = () => {
                 <td>{query.createdAt ? new Date(query.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
                 <td>{query.createdAt ? new Date(query.createdAt).toLocaleTimeString('en-GB') : 'N/A'}</td>
                 <td>{query.employeeId?.name || 'N/A'}</td>
-                <td>{query.priority || 'N/A'}</td>
+                <td>{query.priority === 'med' ? 'medium' : query.priority || 'N/A'}</td>
                 <td>{query.issueType || 'N/A'}</td>
                 <td>{query.status === 'open' ? 'Open' : query.status}</td>
                 <td>

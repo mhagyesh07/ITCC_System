@@ -116,6 +116,77 @@
   gap: 1rem; /* Add spacing between elements */
 }
 
+/* Updated styling for Admin Reset Password page to match Login page */
+.admin-reset-password {
+  max-width: 40%; /* Make the page narrower */
+  margin: 0 auto;
+  padding: 1.5rem; /* Reduce padding */
+  background-color: #e3f2fd; /* Light blue background */
+  border: 1px solid #90caf9; /* Complementary border */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh; /* Center vertically */
+}
+
+.admin-reset-password h2 {
+  text-align: center;
+  color: #03045e; /* Deep navy blue */
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.admin-reset-password form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Add spacing between form groups */
+}
+
+.admin-reset-password label {
+  font-weight: 500;
+  color: #0077b6; /* Calm ocean blue */
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.admin-reset-password input[type="email"],
+.admin-reset-password input[type="password"] {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #90e0ef; /* Light blue border */
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.admin-reset-password input[type="email"]:focus,
+.admin-reset-password input[type="password"]:focus {
+  border-color: #00b4d8; /* Bright blue border on focus */
+  outline: none;
+}
+
+.admin-reset-password button {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #0077b6, #03045e); /* Blue gradient */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.admin-reset-password button:hover {
+  background: linear-gradient(135deg, #03045e, #0077b6); /* Reverse gradient on hover */
+  transform: translateY(-2px);
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
   .admin-table-container {

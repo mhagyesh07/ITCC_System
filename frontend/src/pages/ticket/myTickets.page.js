@@ -5,8 +5,9 @@ import './myTickets.style.css';
 
 const MyTickets = () => {
   const [tickets, setTickets] = useState([]);
+  const [originalTickets, setOriginalTickets] = useState([]); // Store original order
   const [sortColumn, setSortColumn] = useState(null);
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortOrder, setSortOrder] = useState('default');
 
   useEffect(() => {
     const fetchEmployeeId = async () => {
@@ -35,6 +36,7 @@ const MyTickets = () => {
         });
         const sortedTickets = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setTickets(sortedTickets);
+        setOriginalTickets(sortedTickets); // Store the original order
       } catch (error) {
         console.error('Error fetching tickets:', error.response?.data || error.message);
         toast.error('Failed to fetch tickets. Please try again.', { duration: 5000 });
@@ -60,50 +62,64 @@ const MyTickets = () => {
   };
 
   const handleSort = (column) => {
+    if (!column || column === 'none') {
+      setTickets([...originalTickets]);
+      setSortColumn(null);
+      setSortOrder('default');
+      return;
+    }
+
     let sortedTickets;
+    const priorityMap = { low: 1, medium: 2, med: 2, high: 3, critical: 4 };
+
     if (sortColumn === column) {
-      if (sortOrder === 'asc') {
-        setSortOrder('desc');
-        sortedTickets = [...tickets].sort((a, b) => {
-          const valueA = a[column] || '';
-          const valueB = b[column] || '';
-
-          if (typeof valueA === 'string' && typeof valueB === 'string') {
-            return valueB.localeCompare(valueA);
-          }
-
-          return valueB - valueA;
-        });
-      } else if (sortOrder === 'desc') {
-        setSortOrder('default');
-        sortedTickets = [...tickets].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      } else {
+      // Cycle through: default -> asc -> desc -> default
+      if (sortOrder === 'default') {
         setSortOrder('asc');
-        sortedTickets = [...tickets].sort((a, b) => {
-          const valueA = a[column] || '';
-          const valueB = b[column] || '';
-
-          if (typeof valueA === 'string' && typeof valueB === 'string') {
-            return valueA.localeCompare(valueB);
-          }
-
-          return valueA - valueB;
-        });
+        if (column === 'priority') {
+          sortedTickets = [...tickets].sort((a, b) => {
+            const valueA = priorityMap[a[column]] || 0;
+            const valueB = priorityMap[b[column]] || 0;
+            return valueA - valueB; // Ascending: low -> medium -> high -> critical
+          });
+        } else {
+          sortedTickets = [...tickets].sort((a, b) => {
+            return a[column].localeCompare(b[column]);
+          });
+        }
+      } else if (sortOrder === 'asc') {
+        setSortOrder('desc');
+        if (column === 'priority') {
+          sortedTickets = [...tickets].sort((a, b) => {
+            const valueA = priorityMap[a[column]] || 0;
+            const valueB = priorityMap[b[column]] || 0;
+            return valueB - valueA; // Descending: critical -> high -> medium -> low
+          });
+        } else {
+          sortedTickets = [...tickets].sort((a, b) => {
+            return b[column].localeCompare(a[column]);
+          });
+        }
+      } else {
+        setSortOrder('default');
+        sortedTickets = [...originalTickets]; // Return to original order
       }
     } else {
       setSortColumn(column);
       setSortOrder('asc');
-      sortedTickets = [...tickets].sort((a, b) => {
-        const valueA = a[column] || '';
-        const valueB = b[column] || '';
-
-        if (typeof valueA === 'string' && typeof valueB === 'string') {
-          return valueA.localeCompare(valueB);
-        }
-
-        return valueA - valueB;
-      });
+      if (column === 'priority') {
+        sortedTickets = [...tickets].sort((a, b) => {
+          const valueA = priorityMap[a[column]] || 0;
+          const valueB = priorityMap[b[column]] || 0;
+          return valueA - valueB; // Ascending: low -> medium -> high -> critical
+        });
+      } else {
+        sortedTickets = [...tickets].sort((a, b) => {
+          return a[column].localeCompare(b[column]);
+        });
+      }
     }
+
     setTickets(sortedTickets);
   };
 
@@ -113,15 +129,16 @@ const MyTickets = () => {
       <p className="disclaimer" style={{ fontWeight: 'bold' }}>
         Note: "Closed" status indicates the work is completed, while "Open" status means the work is still in progress.
       </p>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <div>
-          <label htmlFor="sort-column">Sort by:</label>
-          <select id="sort-column" onChange={(e) => setSortColumn(e.target.value)}>
-            <option value="none">None</option>
-            <option value="priority">Priority</option>
-            <option value="status">Status</option>
-          </select>
-        </div>
+      <p className="priority-note" style={{ fontWeight: 'bold', color: '#000' }}>
+        Note: Priority levels are ordered as follows: Critical (highest priority), High, Medium, and Low (lowest priority).
+      </p>
+      <div className="sorting-controls">
+        <label htmlFor="sort-column">Sort by:</label>
+        <select id="sort-column" value={sortColumn || 'none'} onChange={(e) => handleSort(e.target.value)}>
+          <option value="none">None</option>
+          <option value="priority">Priority</option>
+          <option value="status">Status</option>
+        </select>
         <button className="sort-button" onClick={() => handleSort(sortColumn)}>
           Toggle Order ({sortOrder === 'asc' ? 'Ascending' : sortOrder === 'desc' ? 'Descending' : 'Default'})
         </button>

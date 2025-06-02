@@ -7,8 +7,9 @@ import './admin.style.css';
 const Admin = () => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
-  const [sortColumn, setSortColumn] = useState('createdAt');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [originalTickets, setOriginalTickets] = useState([]); // Store original order
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortOrder, setSortOrder] = useState('default');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -18,10 +19,10 @@ const Admin = () => {
     axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/tickets?limit=10&sort=-createdAt`, config)
       .then(response => {
         setTickets(response.data);
+        setOriginalTickets(response.data); // Store the original order
       })
       .catch(error => {
         console.error('Error fetching tickets:', error);
-
       });
   }, []);
 
@@ -30,47 +31,72 @@ const Admin = () => {
   };
 
   const handleSort = (column) => {
+    if (!column || column === 'none') {
+      setTickets([...originalTickets]);
+      setSortColumn(null);
+      setSortOrder('default');
+      return;
+    }
+
     let sortedTickets;
+    const priorityMap = { low: 1, medium: 2, med: 2, high: 3, critical: 4 };
+
     if (sortColumn === column) {
-      if (sortOrder === 'asc') {
-        setSortOrder('desc');
-        sortedTickets = [...tickets].sort((a, b) => {
-          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
-          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
-
-          if (typeof valueA === 'string' && typeof valueB === 'string') {
-            return valueB.localeCompare(valueA);
-          }
-
-          return valueB - valueA;
-        });
-      } else if (sortOrder === 'desc') {
-        setSortOrder('default');
-        sortedTickets = [...tickets].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      } else {
+      // Cycle through: default -> asc -> desc -> default
+      if (sortOrder === 'default') {
         setSortOrder('asc');
         sortedTickets = [...tickets].sort((a, b) => {
-          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
-          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
+                         column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
+          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
+                         column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
 
-          if (typeof valueA === 'string' && typeof valueB === 'string') {
+          if (column === 'priority') {
+            return valueA - valueB; // Ascending: low -> medium -> high -> critical
+          } else if (column === 'createdAt') {
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          } else if (typeof valueA === 'string' && typeof valueB === 'string') {
             return valueA.localeCompare(valueB);
           }
-
           return valueA - valueB;
         });
+      } else if (sortOrder === 'asc') {
+        setSortOrder('desc');
+        sortedTickets = [...tickets].sort((a, b) => {
+          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
+                         column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
+          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
+                         column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
+
+          if (column === 'priority') {
+            return valueB - valueA; // Descending: critical -> high -> medium -> low
+          } else if (column === 'createdAt') {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return valueB.localeCompare(valueA);
+          }
+          return valueB - valueA;
+        });
+      } else {
+        setSortOrder('default');
+        sortedTickets = [...originalTickets]; // Return to original order
       }
     } else {
       setSortColumn(column);
       setSortOrder('asc');
       sortedTickets = [...tickets].sort((a, b) => {
-        const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : a[column] || '';
-        const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : b[column] || '';
+        const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
+                       column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
+        const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
+                       column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
 
-        if (typeof valueA === 'string' && typeof valueB === 'string') {
+        if (column === 'priority') {
+          return valueA - valueB; // Ascending: low -> medium -> high -> critical
+        } else if (column === 'createdAt') {
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        } else if (typeof valueA === 'string' && typeof valueB === 'string') {
           return valueA.localeCompare(valueB);
         }
-
         return valueA - valueB;
       });
     }
@@ -81,14 +107,18 @@ const Admin = () => {
   return (
     <Container className="admin-page">
       <h1 className="admin-header">Admin Dashboard</h1>
-      <div style={{ width: "100%", display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
         <Button className="details-button" onClick={() => navigate('/admin/all-queries')}>
           Show All Queries
+        </Button>
+        <Button className="details-button" onClick={() => navigate('/admin/reset-password')}>
+          Reset Employee Password
         </Button>
       </div>
       <div className="sorting-controls">
         <label htmlFor="sort-column">Sort by:</label>
-        <select id="sort-column" onChange={(e) => setSortColumn(e.target.value)}>
+        <select id="sort-column" value={sortColumn || 'none'} onChange={(e) => handleSort(e.target.value)}>
+          <option value="none">None</option>
           <option value="createdAt">Date</option>
           <option value="employeeId.name">Name</option>
           <option value="priority">Priority</option>
@@ -118,7 +148,7 @@ const Admin = () => {
                 <td>{ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
                 <td>{ticket.createdAt ? new Date(ticket.createdAt).toLocaleTimeString('en-GB') : 'N/A'}</td>
                 <td>{ticket.employeeId?.name || 'N/A'}</td>
-                <td>{ticket.priority || 'N/A'}</td>
+                <td>{ticket.priority === 'med' ? 'medium' : ticket.priority || 'N/A'}</td>
                 <td>{ticket.issueType || 'N/A'}</td>
                 <td>{ticket.status === 'open' ? 'Open' : ticket.status}</td>
                 <td>

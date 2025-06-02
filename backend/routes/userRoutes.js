@@ -72,4 +72,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Add route for admin to reset employee passwords
+router.post('/admin/reset-password', protect, async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: 'Employee not found.' });
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while resetting the password.' });
+  }
+});
+
 module.exports = router;

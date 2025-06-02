@@ -8,6 +8,7 @@ import Admin from './pages/admin/admin.page'; // Admin Page
 import AllQueries from './pages/admin/allQueries.page'; // All Queries Page
 import QueryDetails from './pages/admin/queryDetails.page'; // Query Details Page
 import MyTickets from './pages/ticket/myTickets.page'; // My Tickets Page
+import AdminResetPassword from './pages/admin/adminResetPassword.page'; // Admin Reset Password Page
 
 const ProtectedRoute = ({ children, role }) => {
   const token = localStorage.getItem('token');
@@ -36,9 +37,23 @@ function App() {
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('role');
 
-    if (!token && window.location.pathname !== '/') {
-      navigate('/login');
-    } else if (userRole === 'employee' && window.location.pathname.startsWith('/admin')) {
+    const currentPath = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+    const role = searchParams.get('role');
+
+    if (!token && currentPath === '/forgot-password') {
+      // Allow navigation to /forgot-password without redirecting to /login
+      return;
+    }
+
+    if (!token && (currentPath === '/login' || currentPath === '/signup') && role) {
+      // Avoid redirect loop if already on the correct route
+      return;
+    }
+
+    if (!token && currentPath !== '/') {
+      navigate(`/login${role ? `?role=${role}` : ''}`);
+    } else if (userRole === 'employee' && currentPath.startsWith('/admin')) {
       navigate('/ticket');
     }
   }, [navigate]);
@@ -53,6 +68,7 @@ function App() {
       <Route path="/admin/all-queries" element={<ProtectedRoute role="admin"><AllQueries /></ProtectedRoute>} />
       <Route path="/admin/query/:id" element={<ProtectedRoute role="admin"><QueryDetails /></ProtectedRoute>} />
       <Route path="/my-tickets" element={<ProtectedRoute role="employee"><MyTickets /></ProtectedRoute>} />
+      <Route path="/admin/reset-password" element={<AdminResetPassword />} />
     </Routes>
   );
 }
