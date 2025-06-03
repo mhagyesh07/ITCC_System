@@ -95,11 +95,13 @@ const Login = () => {
               Login
             </Button>
           </Form>
-          <div className="signup-link">
-            <p>
-              Don't have an account? <Link to={`/signup?role=${role}`}>Sign up here</Link>
-            </p>
-          </div>
+          {role === 'employee' && (
+            <div className="signup-link">
+              <p>
+                Don't have an account? <Link to={`/signup?role=${role}`}>Sign up here</Link>
+              </p>
+            </div>
+          )}
         </Col>
       </Row>
     </Container>
