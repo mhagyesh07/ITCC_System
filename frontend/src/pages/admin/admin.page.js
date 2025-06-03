@@ -18,7 +18,6 @@ const Admin = () => {
     };
     axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/tickets?limit=10&sort=-createdAt`, config)
       .then(response => {
-        console.log('Tickets API Response:', response.data); // Debug log
         setTickets(response.data);
         setOriginalTickets(response.data);
       })
@@ -140,7 +139,6 @@ const Admin = () => {
               <th>Issue Type</th>
               <th>Status</th>
               <th>Details</th>
-              <th>File</th>
             </tr>
           </thead>
           <tbody>
@@ -159,15 +157,6 @@ const Admin = () => {
                   >
                     View Details
                   </Button>
-                </td>
-                <td>
-                  {ticket.file ? (
-                    <a href={ticket.file} target="_blank" rel="noopener noreferrer">
-                      View File
-                    </a>
-                  ) : (
-                    'No File Attached'
-                  )}
                 </td>
               </tr>
             ))}

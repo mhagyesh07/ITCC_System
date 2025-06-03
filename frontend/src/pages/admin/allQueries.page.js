@@ -131,7 +131,6 @@ const AllQueries = () => {
               <th>Priority</th>
               <th>Issue Type</th>
               <th>Status</th>
-              <th>File</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -144,15 +143,6 @@ const AllQueries = () => {
                 <td>{query.priority === 'med' ? 'medium' : query.priority || 'N/A'}</td>
                 <td>{query.issueType || 'N/A'}</td>
                 <td>{query.status === 'open' ? 'Open' : query.status}</td>
-                <td>
-                  {query.file ? (
-                    <a href={query.file} target="_blank" rel="noopener noreferrer">
-                      View File
-                    </a>
-                  ) : (
-                    'No File Attached'
-                  )}
-                </td>
                 <td>
                   <Button
                     className="details-button"

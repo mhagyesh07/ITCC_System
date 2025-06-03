@@ -11,11 +11,7 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors({
-  origin: 'https://itcc-system.vercel.app', // Replace with your frontend's URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+app.use(cors());
 
 // Connect to MongoDB
 mongoose
@@ -42,8 +38,6 @@ if (process.env.NODE_ENV === "production") {
   // });
 }
 
-// Serve static files from the 'uploads' directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Start the server
 const PORT = process.env.PORT || 5000;
