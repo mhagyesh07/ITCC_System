@@ -162,7 +162,7 @@ const Admin = () => {
                 </td>
                 <td>
                   {ticket.file ? (
-                    <a href={ticket.file} target="_blank" rel="noopener noreferrer">
+                    <a href={ticket.file} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                       View File
                     </a>
                   ) : (
