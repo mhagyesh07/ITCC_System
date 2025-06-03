@@ -21,13 +21,35 @@ The frontend application follows a component-based architecture, leveraging mode
 - **Selectors:** Functions used to efficiently retrieve derived data from the Redux store.
 - **Middleware (e.g., Redux Thunk):** Used for handling asynchronous operations, such as API calls, before an action reaches the reducers.
 
-The Redux setup (store, reducers, actions) can typically be found in the `src/store` or `src/redux` directory.
+The primary Redux setup (store, reducers, actions) is located in the `frontend/src/redux/` directory.
+(Note: There appears to be an additional `frontend/redux/` directory. It's recommended to verify if this is legacy code and consolidate all Redux logic into `frontend/src/redux/` for clarity.)
 
 ### Routing
 
 - **React Router:** Client-side routing is handled by `react-router-dom`. This allows for navigation between different views/pages of the application without requiring a full page reload.
 - **Route Definitions:** Routes are typically defined in a central location (e.g., `src/App.js` or a dedicated `src/routes.js` file), mapping URL paths to specific React components.
 - **Protected Routes:** Routes that require user authentication are protected, redirecting unauthenticated users to a login page.
+
+## Key Features and Pages
+
+The frontend application provides the user interface for interacting with the Ticketing System. Key functionalities are role-dependent (regular User vs. Admin).
+
+### Core User Functionalities:
+
+*   **Login/Registration Page (`src/pages/entry/`):** Allows new users to register and existing users to log in.
+*   **Ticket Creation (`src/pages/ticket/ticket.page.js` - likely):** Authenticated users can create new support tickets.
+*   **My Tickets (`src/pages/ticket/myTickets.page.js`):** Users can view a list of tickets they have submitted and check their status.
+*   **View Ticket Details (`src/pages/ticket/ticket.page.js` - likely, when viewing existing):** Users can see detailed information for a specific ticket.
+
+### Admin Functionalities:
+
+*   **Admin Dashboard (`src/pages/admin/admin.page.js`):** A central page for administrators.
+*   **View All Queries/Tickets (`src/pages/admin/allQueries.page.js`):** Admins can view all tickets in the system, with capabilities to inspect details.
+*   **Query/Ticket Details (`src/pages/admin/queryDetails.page.js`):** Admins can view and manage specific ticket details, including adding comments.
+*   **User Password Reset (`src/pages/admin/adminResetPassword.page.js`):** Admins can reset passwords for users.
+*   (User management views might also be present or integrated, allowing admins to view all users - inferred from backend capabilities).
+
+This structure is based on the page components found in `frontend/src/pages/`.
 
 ## Building and Running the Frontend Separately
 

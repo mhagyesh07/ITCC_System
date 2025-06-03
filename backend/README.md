@@ -38,6 +38,28 @@ The backend application follows a layered architecture, promoting separation of 
 -   **Execution Order:** Middleware functions can be executed sequentially, modifying the request or response objects or terminating the request-response cycle if necessary.
 -   **Location:** Often found in a `middleware/` directory (e.g., `middleware/authMiddleware.js`).
 
+## API Endpoints Summary
+
+This summary lists the primary API endpoints available in the backend. All endpoints are prefixed by `/api`. For detailed request/response formats, see the main project README.
+
+### User Routes (mounted at `/api/users`)
+
+-   **`POST /`**: Register a new user.
+-   **`POST /login`**: Login an existing user.
+-   **`GET /profile`**: Get the profile of the authenticated user (Protected).
+-   **`GET /`**: Get all users (Protected by `protect` - any authenticated user).
+-   **`POST /admin/reset-password`**: Reset password for an employee (Protected by `protect` - ideally admin only).
+
+### Ticket Routes (mounted at `/api/tickets`)
+
+-   **`POST /`**: Create a new ticket (Protected).
+-   **`GET /`**: Get all tickets (Protected by `protect` - any authenticated user, returns all tickets). Supports `limit` and `sort` query parameters.
+-   **`GET /:id`**: Get a specific ticket by ID (Protected).
+-   **`PUT /:id/comment`**: Add/update a comment on a ticket (Protected by `protect` - any authenticated user).
+-   **`PUT /:id/close`**: Close a ticket (Protected).
+-   **`GET /admin-only`**: Get all tickets (Admin only - Protected by `protectAdmin`).
+-   **`GET /employee/:id`**: Get all tickets for a specific employee ID (Protected).
+
 ## Running the Backend Separately
 
 ### Prerequisites
