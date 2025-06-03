@@ -11,7 +11,10 @@ router.post('/', protect, async (req, res) => {
     await ticket.save();
     res.status(201).json(ticket);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    const validationErrors = Object.keys(error.errors || {}).map(
+      (key) => `${key} is required.`
+    );
+    res.status(400).json({ error: validationErrors.join(' '), duration: 5000 });
   }
 });
 
@@ -98,12 +101,13 @@ router.get('/admin-only', protect, protectAdmin, async (req, res) => {
 // Get tickets for a specific employee
 router.get('/employee/:id', protect, async (req, res) => {
   try {
-    console.log('Fetching tickets for employee ID:', req.params.id);
     const tickets = await Ticket.find({ employeeId: req.params.id });
-    console.log('Tickets fetched:', tickets);
-
+    if (!tickets.length) {
+      return res.status(404).json({ error: 'No tickets found for the specified employee.' });
+    }
     res.json(tickets);
   } catch (error) {
+    console.error('Error fetching tickets for employee:', error);
     res.status(500).json({ error: 'Failed to fetch tickets for the employee.' });
   }
 });

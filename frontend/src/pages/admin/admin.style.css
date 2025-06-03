@@ -198,6 +198,25 @@
   }
 }
 
+@media (max-width: 768px) {
+  .admin-reset-password {
+    max-width: 90%; /* Adjust width for smaller screens */
+    padding: 1rem; /* Reduce padding */
+  }
+
+  .admin-reset-password h2 {
+    font-size: 1.5rem; /* Adjust heading size */
+  }
+
+  .admin-reset-password form {
+    gap: 1rem; /* Adjust spacing between form elements */
+  }
+
+  .admin-reset-password button {
+    font-size: 1rem; /* Adjust button font size */
+  }
+}
+
 @media (max-width: 600px) {
   .admin-page {
     padding: 0.5rem;

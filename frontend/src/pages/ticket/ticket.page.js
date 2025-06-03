@@ -128,7 +128,7 @@ const Ticket = () => {
       setError(''); // Clear any previous errors
     } catch (error) {
       console.error('Error during ticket creation:', error.response?.data || error.message);
-      toast.error(error.response?.data?.error || 'An error occurred while creating the ticket.');
+      toast.error(error.response?.data?.error || 'An error occurred while creating the ticket.', { duration: 5000 });
       setSuccessMessage(''); // Clear any previous success messages
     }
   };
