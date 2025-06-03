@@ -16,10 +16,9 @@ This project is a comprehensive ticketing system designed to streamline customer
 - **User Profile Management:** Users can view their profile information.
 - **Ticket Creation:** Authenticated users can create new support tickets with details like title and description.
 - **View User's Tickets:** Users can view a list of tickets they have submitted.
-- **View Specific Ticket:** Users can view the detailed information of a specific ticket.
-- **Ticket Updates:** Users can update their tickets (Note: current backend routes don't explicitly show a general ticket update by user, mainly close and admin comment. This point might need to be refined or removed if only admins can update).
-- **Close Tickets:** Users or Admins can close tickets.
-
+- **View Specific Ticket:** Users can view the detailed information of a specific ticket..
+- **Close Tickets:** Admins can close tickets.
+  
 **Admin Functionalities:**
 - **Admin Dashboard:** Centralized panel for administrative tasks.
 - **View All Tickets:** Admins can view all tickets submitted in the system.
@@ -27,14 +26,13 @@ This project is a comprehensive ticketing system designed to streamline customer
 - **Admin Comments:** Admins can add comments to tickets, visible to relevant parties.
 - **Manage Users:** Admins can view all registered users.
 - **Reset User Passwords:** Admins have the capability to reset passwords for users.
-- **Ticket Filtering:** (Assumed from "Search and Filtering" and admin view of all tickets) Admins can search and filter tickets.
+- **Ticket Filtering:** Admins can search and filter tickets.
 
 **General:**
 - **Role-Based Access Control:** Different functionalities accessible based on user roles (user vs. admin).
 - **API Security:** Protected API endpoints using JWT authentication.
 - **Scalable Backend:** Built with Node.js, Express, and MongoDB for efficient data handling.
 - **User-Friendly Frontend:** Developed with React for a responsive user experience.
-- **(Optional) Real-time Updates:** Potential for real-time notifications for ticket updates (e.g., using WebSockets).
 
 ## Project Structure
 
@@ -368,4 +366,3 @@ All routes in this section require authentication (`Authorization: Bearer <token
         -   `404 Not Found`: No tickets found for the employee.
         -   `500 Internal Server Error`.
 
-*(Note: The previous README mentioned a `DELETE /api/tickets/:id` endpoint. This route does not appear to exist in the current `backend/routes/ticketRoutes.js` and has been omitted from this documentation.)*
