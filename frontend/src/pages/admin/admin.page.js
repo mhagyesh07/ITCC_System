@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Container, Button } from 'react-bootstrap';
-import './admin.style.css'; 
+import './admin.style.css';
 
 const Admin = () => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
-  const [originalTickets, setOriginalTickets] = useState([]); // Store original order
+  const [originalTickets, setOriginalTickets] = useState([]);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('default');
 
@@ -18,8 +18,9 @@ const Admin = () => {
     };
     axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/tickets?limit=10&sort=-createdAt`, config)
       .then(response => {
+        console.log('Tickets API Response:', response.data); // Debug log
         setTickets(response.data);
-        setOriginalTickets(response.data); // Store the original order
+        setOriginalTickets(response.data);
       })
       .catch(error => {
         console.error('Error fetching tickets:', error);
@@ -42,7 +43,6 @@ const Admin = () => {
     const priorityMap = { low: 1, medium: 2, med: 2, high: 3, critical: 4 };
 
     if (sortColumn === column) {
-      // Cycle through: default -> asc -> desc -> default
       if (sortOrder === 'default') {
         setSortOrder('asc');
         sortedTickets = [...tickets].sort((a, b) => {
@@ -52,7 +52,7 @@ const Admin = () => {
                          column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
 
           if (column === 'priority') {
-            return valueA - valueB; // Ascending: low -> medium -> high -> critical
+            return valueA - valueB;
           } else if (column === 'createdAt') {
             return new Date(a.createdAt) - new Date(b.createdAt);
           } else if (typeof valueA === 'string' && typeof valueB === 'string') {
@@ -69,7 +69,7 @@ const Admin = () => {
                          column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
 
           if (column === 'priority') {
-            return valueB - valueA; // Descending: critical -> high -> medium -> low
+            return valueB - valueA;
           } else if (column === 'createdAt') {
             return new Date(b.createdAt) - new Date(a.createdAt);
           } else if (typeof valueA === 'string' && typeof valueB === 'string') {
@@ -79,7 +79,7 @@ const Admin = () => {
         });
       } else {
         setSortOrder('default');
-        sortedTickets = [...originalTickets]; // Return to original order
+        sortedTickets = [...originalTickets];
       }
     } else {
       setSortColumn(column);
@@ -91,7 +91,7 @@ const Admin = () => {
                        column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
 
         if (column === 'priority') {
-          return valueA - valueB; // Ascending: low -> medium -> high -> critical
+          return valueA - valueB;
         } else if (column === 'createdAt') {
           return new Date(a.createdAt) - new Date(b.createdAt);
         } else if (typeof valueA === 'string' && typeof valueB === 'string') {
@@ -140,6 +140,7 @@ const Admin = () => {
               <th>Issue Type</th>
               <th>Status</th>
               <th>Details</th>
+              <th>File</th>
             </tr>
           </thead>
           <tbody>
@@ -158,6 +159,15 @@ const Admin = () => {
                   >
                     View Details
                   </Button>
+                </td>
+                <td>
+                  {ticket.file ? (
+                    <a href={ticket.file} target="_blank" rel="noopener noreferrer">
+                      View File
+                    </a>
+                  ) : (
+                    'No File Attached'
+                  )}
                 </td>
               </tr>
             ))}

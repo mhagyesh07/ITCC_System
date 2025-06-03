@@ -20,6 +20,7 @@ const Ticket = () => {
   const [charCount, setCharCount] = useState(200); // Remaining character count
   const [error, setError] = useState(''); // Error state for API errors
   const [successMessage, setSuccessMessage] = useState(''); // Success message state
+  const [file, setFile] = useState(null); // State to manage the selected file
 
   const navigate = useNavigate();
 
@@ -85,17 +86,29 @@ const Ticket = () => {
 
     try {
       const token = localStorage.getItem('token'); // Get the JWT token
+
+      const formData = new FormData();
+      formData.append('employeeId', ticketDataWithoutId.employeeId);
+      formData.append('issueType', ticketDataWithoutId.issueType);
+      formData.append('subIssue', ticketDataWithoutId.subIssue);
+      formData.append('priority', ticketDataWithoutId.priority);
+      formData.append('description', ticketDataWithoutId.description);
+      if (file) {
+        formData.append('file', file);
+      }
+
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
         },
       };
+
       // Send POST request to backend
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/tickets`,
-        ticketDataWithoutId,
-        config // Pass the config with headers
+        formData,
+        config
       );
       console.log('Ticket created:', response.data);
 
@@ -252,6 +265,15 @@ const Ticket = () => {
               placeholder="Describe the issue (max 200 characters)"
             ></textarea>
             <small className="text-muted">{charCount} characters remaining</small>
+          </div>
+
+          <div className="mt-4">
+            <label className="form-label">Attach File</label>
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="form-control"
+            />
           </div>
 
           <p className="disclaimer" style={{ fontWeight: 'bold', textAlign: 'center', marginTop: '1rem' }}>

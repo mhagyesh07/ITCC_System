@@ -9,6 +9,7 @@ const ticketSchema = new mongoose.Schema({
   status: { type: String, enum: ['open','closed'], default: 'open' },
   createdAt: { type: Date, default: Date.now },
   adminComment: { type: String, maxlength: 1000 }, 
+  file: { type: String }, // Add file field to store file path or URL
 });
 
 module.exports = mongoose.model('Ticket', ticketSchema);

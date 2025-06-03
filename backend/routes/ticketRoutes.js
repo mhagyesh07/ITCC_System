@@ -1,13 +1,31 @@
 const express = require('express');
 const Ticket = require('../models/Ticket');
 const { protect, protectAdmin } = require('../middleware/authMiddleware');
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../uploads')); // Save files in the 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Generate unique filenames
+  },
+});
+
+const upload = multer({ storage });
 
 const router = express.Router();
 
 // Create a new ticket (protected)
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, upload.single('file'), async (req, res) => {
   try {
-    const ticket = new Ticket(req.body);
+    const ticketData = req.body;
+    if (req.file) {
+      ticketData.file = req.file.path; // Save file path if uploaded
+    }
+    const ticket = new Ticket(ticketData);
     await ticket.save();
     res.status(201).json(ticket);
   } catch (error) {
@@ -27,7 +45,15 @@ router.get('/', protect, async (req, res) => {
     if (sort) query.sort(sort);
     if (limit) query.limit(parseInt(limit));
 
+    const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+
     const tickets = await query;
+    tickets.forEach(ticket => {
+      if (ticket.file) {
+        ticket.file = `${baseUrl}/uploads/${path.basename(ticket.file)}`; // Update file path to public URL
+      }
+    });
+    console.log('Fetched Tickets:', tickets); // Debug log
     res.json(tickets);
   } catch (error) {
     res.status(500).json({ error: error.message });
