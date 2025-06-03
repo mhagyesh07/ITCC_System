@@ -45,12 +45,12 @@ router.get('/', protect, async (req, res) => {
     if (sort) query.sort(sort);
     if (limit) query.limit(parseInt(limit));
 
-    const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+    const baseUrl = process.env.BASE_URL || 'https://itcc-system.vercel.app';
 
     const tickets = await query;
     tickets.forEach(ticket => {
       if (ticket.file) {
-        ticket.file = `/uploads/${path.basename(ticket.file)}`; // Ensure relative path
+        ticket.file = `${baseUrl}/uploads/${path.basename(ticket.file)}`; // Ensure full URL
       }
     });
     console.log('Fetched Tickets:', tickets); // Debug log
