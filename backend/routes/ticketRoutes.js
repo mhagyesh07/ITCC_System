@@ -50,7 +50,7 @@ router.get('/', protect, async (req, res) => {
     const tickets = await query;
     tickets.forEach(ticket => {
       if (ticket.file) {
-        ticket.file = `${req.protocol}://${req.get('host')}/uploads/${path.basename(ticket.file)}`; // Ensure correct URL
+        ticket.file = `/uploads/${path.basename(ticket.file)}`; // Ensure relative path
       }
     });
     console.log('Fetched Tickets:', tickets); // Debug log
