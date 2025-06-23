@@ -99,39 +99,45 @@ const Ticket = () => {
       );
       console.log('Ticket created:', response.data);
 
-      toast.success('Ticket submitted successfully!', { duration: 5000 });
       toast((t) => (
-        <span>
-          Ticket submitted successfully! Would you like to raise another ticket?
-          <button
-            onClick={() => {
-              toast.dismiss(t.id);
-              setSelectedIssueCategory('');
-              setSelectedSubIssue('');
-              setPriority('low');
-              setDescription('');
-              setCharCount(200);
-            }}
-          >
-            Yes
-          </button>
-          <button
-            onClick={() => {
-              toast.dismiss(t.id);
-              window.location.href = '/';
-            }}
-          >
-            No
-          </button>
-        </span>
-      ));
-      setError(''); // Clear any previous errors
-    } catch (error) {
-      console.error('Error during ticket creation:', error.response?.data || error.message);
-      toast.error(error.response?.data?.error || 'An error occurred while creating the ticket.', { duration: 5000 });
-      setSuccessMessage(''); // Clear any previous success messages
-    }
-  };
+    <span>
+      Ticket submitted successfully! Would you like to raise another ticket?
+      <button
+        onClick={() => {
+          toast.dismiss(t.id);
+          setSelectedIssueCategory('');
+          setSelectedSubIssue('');
+          setPriority('low');
+          setDescription('');
+          setCharCount(200);
+        }}
+      >
+        Yes
+      </button>
+      <button
+        onClick={() => {
+          toast.dismiss(t.id);
+          setSelectedIssueCategory('');
+          setSelectedSubIssue('');
+          setPriority('low');
+          setDescription('');
+          setCharCount(200);
+        }}
+      >
+        No
+      </button>
+    </span>
+  ), {
+    duration: 5000,
+    icon: '✅',
+  });
+        setError(''); // Clear any previous errors
+      } catch (error) {
+        console.error('Error during ticket creation:', error.response?.data || error.message);
+        toast.error(error.response?.data?.error || 'An error occurred while creating the ticket.', { duration: 5000 });
+        setSuccessMessage(''); // Clear any previous success messages
+      }
+    };
 
   return (
     <div className="ticket-page">
