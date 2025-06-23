@@ -30,78 +30,136 @@ const Admin = () => {
     navigate(`/admin/query/${id}`);
   };
 
-  const handleSort = (column) => {
-    if (!column || column === 'none') {
-      setTickets([...originalTickets]);
-      setSortColumn(null);
-      setSortOrder('default');
-      return;
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString();
+  };
+
+const handleSort = (column) => {
+  if (!column || column === 'none') {
+    setTickets([...originalTickets]);
+    setSortColumn(null);
+    setSortOrder('default');
+    return;
+  }
+
+  let sortedTickets;
+  const priorityMap = { low: 1, medium: 2, med: 2, high: 3, critical: 4 };
+
+  // Helper function to safely parse dates
+  const parseDate = (dateValue) => {
+    if (!dateValue) return new Date(0); // Return epoch if no date
+    
+    // If it's already a Date object, return it
+    if (dateValue instanceof Date) return dateValue;
+    
+    // Try to parse the date string
+    const parsed = new Date(dateValue);
+    
+    // Check if the parsed date is valid
+    if (isNaN(parsed.getTime())) {
+      console.warn('Invalid date found:', dateValue);
+      return new Date(0); // Return epoch for invalid dates
+    }
+    
+    return parsed;
+  };
+
+  // Helper function to parse custom date formats (DD/MM/YY, DD/MM/YYYY, etc.)
+  const parseCustomDate = (dateString) => {
+    if (!dateString) return new Date(0);
+    
+    // Try parsing as standard date first
+    let date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      return date;
     }
 
-    let sortedTickets;
-    const priorityMap = { low: 1, medium: 2, med: 2, high: 3, critical: 4 };
-
-    if (sortColumn === column) {
-      if (sortOrder === 'default') {
-        setSortOrder('asc');
-        sortedTickets = [...tickets].sort((a, b) => {
-          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
-                         column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
-          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
-                         column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
-
-          if (column === 'priority') {
-            return valueA - valueB;
-          } else if (column === 'createdAt') {
-            return new Date(a.createdAt) - new Date(b.createdAt);
-          } else if (typeof valueA === 'string' && typeof valueB === 'string') {
-            return valueA.localeCompare(valueB);
-          }
-          return valueA - valueB;
-        });
-      } else if (sortOrder === 'asc') {
-        setSortOrder('desc');
-        sortedTickets = [...tickets].sort((a, b) => {
-          const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
-                         column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
-          const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
-                         column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
-
-          if (column === 'priority') {
-            return valueB - valueA;
-          } else if (column === 'createdAt') {
-            return new Date(b.createdAt) - new Date(a.createdAt);
-          } else if (typeof valueA === 'string' && typeof valueB === 'string') {
-            return valueB.localeCompare(valueA);
-          }
-          return valueB - valueA;
-        });
-      } else {
-        setSortOrder('default');
-        sortedTickets = [...originalTickets];
+    // If standard parsing fails, try custom formats
+    const ddmmyyMatch = dateString.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+    if (ddmmyyMatch) {
+      let [, day, month, year] = ddmmyyMatch;
+      
+      // Convert 2-digit year to 4-digit
+      if (year.length === 2) {
+        year = parseInt(year) > 50 ? `19${year}` : `20${year}`;
       }
+      
+      // Create date (month is 0-indexed in JavaScript)
+      date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    }
+
+    console.warn('Could not parse date:', dateString);
+    return new Date(0);
+  };
+
+  // Helper function to get comparison values
+  const getComparisonValue = (item, column) => {
+    switch (column) {
+      case 'employeeId.name':
+        return item.employeeId?.name || '';
+      case 'priority':
+        return priorityMap[item[column]] || 0;
+      case 'createdAt':
+      case 'updatedAt':
+        // Use parseCustomDate if you're dealing with custom formats, otherwise use parseDate
+        return parseDate(item[column]);
+      default:
+        return item[column] || '';
+    }
+  };
+
+  // Helper function to compare two values
+  const compareValues = (valueA, valueB, column, isAscending = true) => {
+    const multiplier = isAscending ? 1 : -1;
+
+    if (column === 'priority') {
+      return (valueA - valueB) * multiplier;
+    } else if (column === 'createdAt' || column === 'updatedAt') {
+      // Both values are already Date objects from getComparisonValue
+      return (valueA.getTime() - valueB.getTime()) * multiplier;
+    } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+      return valueA.localeCompare(valueB) * multiplier;
     } else {
-      setSortColumn(column);
+      return (valueA - valueB) * multiplier;
+    }
+  };
+
+  if (sortColumn === column) {
+    if (sortOrder === 'default') {
       setSortOrder('asc');
       sortedTickets = [...tickets].sort((a, b) => {
-        const valueA = column === 'employeeId.name' ? a.employeeId?.name || '' : 
-                       column === 'priority' ? priorityMap[a[column]] || 0 : a[column] || '';
-        const valueB = column === 'employeeId.name' ? b.employeeId?.name || '' : 
-                       column === 'priority' ? priorityMap[b[column]] || 0 : b[column] || '';
-
-        if (column === 'priority') {
-          return valueA - valueB;
-        } else if (column === 'createdAt') {
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        } else if (typeof valueA === 'string' && typeof valueB === 'string') {
-          return valueA.localeCompare(valueB);
-        }
-        return valueA - valueB;
+        const valueA = getComparisonValue(a, column);
+        const valueB = getComparisonValue(b, column);
+        return compareValues(valueA, valueB, column, true);
       });
+    } else if (sortOrder === 'asc') {
+      setSortOrder('desc');
+      sortedTickets = [...tickets].sort((a, b) => {
+        const valueA = getComparisonValue(a, column);
+        const valueB = getComparisonValue(b, column);
+        return compareValues(valueA, valueB, column, false);
+      });
+    } else {
+      setSortOrder('default');
+      sortedTickets = [...originalTickets];
     }
+  } else {
+    setSortColumn(column);
+    setSortOrder('asc');
+    sortedTickets = [...tickets].sort((a, b) => {
+      const valueA = getComparisonValue(a, column);
+      const valueB = getComparisonValue(b, column);
+      return compareValues(valueA, valueB, column, true);
+    });
+  }
 
-    setTickets(sortedTickets);
-  };
+  setTickets(sortedTickets);
+};
 
   return (
     <Container className="admin-page">
@@ -145,7 +203,7 @@ const Admin = () => {
             {tickets.map((ticket) => (
               <tr key={ticket._id}>
                 <td>{ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
-                <td>{ticket.createdAt ? new Date(ticket.createdAt).toLocaleTimeString('en-GB') : 'N/A'}</td>
+                <td>{formatTime(ticket.createdAt)}</td>
                 <td>{ticket.employeeId?.name || 'N/A'}</td>
                 <td>{ticket.priority === 'med' ? 'medium' : ticket.priority || 'N/A'}</td>
                 <td>{ticket.issueType || 'N/A'}</td>
